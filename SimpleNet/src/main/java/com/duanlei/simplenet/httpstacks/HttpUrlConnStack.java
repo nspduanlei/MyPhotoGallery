@@ -66,6 +66,7 @@ public class HttpUrlConnStack implements HttpStack {
     @Override
     public Response performRequest(Request<?> request) {
         HttpURLConnection urlConnection = null;
+
         try {
             // 构建HttpURLConnection
             urlConnection = createUrlConnection(request.getUrl());
@@ -75,6 +76,7 @@ public class HttpUrlConnStack implements HttpStack {
             setRequestParams(urlConnection, request);
             // https 配置
             configHttps(request);
+
             return fetchResponse(urlConnection);
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,10 +140,12 @@ public class HttpUrlConnStack implements HttpStack {
 
         // Initialize HttpResponse with data from the HttpURLConnection.
         ProtocolVersion protocolVersion = new ProtocolVersion("HTTP", 1, 1);
+
         int responseCode = connection.getResponseCode();
         if (responseCode == -1) {
             throw new IOException("Could not retrieve response code from HttpUrlConnection.");
         }
+
         // 状态行数据
         StatusLine responseStatus = new BasicStatusLine(protocolVersion,
                 connection.getResponseCode(), connection.getResponseMessage());

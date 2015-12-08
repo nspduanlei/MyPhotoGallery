@@ -9,6 +9,8 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.widgets.NetworkImageView;
+
 /**
  * Author: duanlei
  * Date: 2015-08-04
@@ -86,6 +88,13 @@ public class ViewHolder {
         iv.setImageResource(resId);
         return this;
     }
+
+    public ViewHolder setImageUrl(int viewId, String url) {
+        NetworkImageView iv = getView(viewId);
+        iv.setImageUrl(url);
+        return this;
+    }
+
 
     public ViewHolder setVisibility(int viewId, int visibility) {
         View view = getView(viewId);

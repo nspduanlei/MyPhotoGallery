@@ -17,11 +17,17 @@ import com.duanlei.myphotogallery.view.adapter.ViewHolder;
 import com.duanlei.pullrefreshview.listener.OnLoadListener;
 import com.duanlei.pullrefreshview.listener.OnRefreshListener;
 import com.duanlei.pullrefreshview.scroller.impl.RefreshGridView;
+import com.duanlei.simpleimageloader.cache.DoubleCache;
+import com.duanlei.simpleimageloader.config.ImageLoaderConfig;
+import com.duanlei.simpleimageloader.core.SimpleImageLoader;
+import com.duanlei.simpleimageloader.policy.ReversePolicy;
 import com.duanlei.simplenet.base.Request;
 import com.duanlei.simplenet.core.RequestQueue;
 import com.duanlei.simplenet.core.SimpleNet;
 import com.duanlei.simplenet.requests.JsonRequest;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -67,9 +73,24 @@ public class MainFragment extends Fragment{
         });
 
         initData();
+        initImageLoader();
 
         obtainHttpData();
         return v;
+    }
+
+    /**
+     * 初始化imageloader
+     */
+    private void initImageLoader() {
+        ImageLoaderConfig config = new ImageLoaderConfig()
+                .setLoadingPlaceholder(R.mipmap.loading)
+                .setNotFoundPlaceholder(R.mipmap.faill_failure)
+                .setCache(new DoubleCache(getActivity()))
+                .setThreadCount(4)
+                .setLoadPolicy(new ReversePolicy());
+        // 初始化
+        SimpleImageLoader.getInstance().init(config);
     }
 
     /**
@@ -88,7 +109,8 @@ public class MainFragment extends Fragment{
         mAdapter = new CommonAdapter<GalleryItem>(getActivity(), mItems, R.layout.item_gallery) {
             @Override
             public void convert(ViewHolder holder, GalleryItem galleryItem) {
-                holder.setImageResource(R.id.imageView, R.mipmap.ic_launcher);
+
+                holder.setImageUrl(R.id.imageView, galleryItem.getUrl());
             }
         };
     }
@@ -109,6 +131,24 @@ public class MainFragment extends Fragment{
             @Override
             public void onComplete(int stCode, JSONObject response, String errMsg) {
                 Log.d(TAG, "数据请求成功");
+
+                try {
+                    JSONArray pics = response.getJSONArray("pic");
+
+                    for (int i = 0; i < pics.length(); i++) {
+
+                        GalleryItem item = new GalleryItem();
+
+                        item.setUrl(pics.getJSONObject(i).optString("linkurl"));
+                        mItems.add(item);
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                mAdapter.notifyDataSetChanged();
             }
         });
 
@@ -120,7 +160,6 @@ public class MainFragment extends Fragment{
         params.put("cid", "15");
 
         queue.addRequest(jsonRequest);
-
     }
 
     @Override
