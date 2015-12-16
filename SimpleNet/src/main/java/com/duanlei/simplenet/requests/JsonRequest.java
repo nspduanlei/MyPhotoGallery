@@ -42,14 +42,13 @@ public class JsonRequest extends Request<JSONObject> {
         super(method, url, listener);
     }
 
-    
     /**
      * 将Response的结果转换为JSONObject
      */
     @Override
     public JSONObject parseResponse(Response response) {
-        String jsonString = new String(response.getRawData());
         try {
+            String jsonString = new String(response.getRawData());
             return new JSONObject(jsonString);
         } catch (JSONException e) {
             e.printStackTrace();

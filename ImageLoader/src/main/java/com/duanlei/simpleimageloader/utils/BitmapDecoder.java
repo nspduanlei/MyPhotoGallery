@@ -73,13 +73,13 @@ public abstract class BitmapDecoder {
         Log.d("", "$## inSampleSize = " + options.inSampleSize
                 + ", width = " + width + ", height= " + height);
         // 图片质量
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        //options.inPreferredConfig = Bitmap.Config.RGB_565;
 
         // 设置为false,解析Bitmap对象加入到内存中
         options.inJustDecodeBounds = false;
 
-        options.inPurgeable = true;
-        options.inInputShareable = true;
+        //options.inPurgeable = true;
+        //options.inInputShareable = true;
     }
 
     private int computeInSmallSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {

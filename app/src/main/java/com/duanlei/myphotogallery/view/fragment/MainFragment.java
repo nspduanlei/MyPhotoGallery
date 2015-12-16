@@ -37,11 +37,12 @@ import java.util.Map;
  * Author: duanlei
  * Date: 2015-12-04
  */
-public class MainFragment extends Fragment{
+public class MainFragment extends Fragment {
 
     private static final String TAG = "MainFragment";
 
     private RefreshGridView mGridView;
+    //private GridView mGridView;
 
     private CommonAdapter mAdapter;
 
@@ -54,6 +55,8 @@ public class MainFragment extends Fragment{
         View v = inflater.inflate(R.layout.fragment_main, container, false);
 
         mGridView = (RefreshGridView) v.findViewById(R.id.gridView);
+
+        //mGridView = (GridView) v.findViewById(R.id.gridView);
 
         mGridView.setOnLoadListener(new OnLoadListener() {
             @Override
@@ -115,7 +118,6 @@ public class MainFragment extends Fragment{
         };
     }
 
-
     RequestQueue queue;
 
     //请求网络数据
@@ -128,29 +130,29 @@ public class MainFragment extends Fragment{
                 UrlConstant.ENDPOINT_NEW,
                 new Request.RequestListener<JSONObject>() {
 
-            @Override
-            public void onComplete(int stCode, JSONObject response, String errMsg) {
-                Log.d(TAG, "数据请求成功");
+                    @Override
+                    public void onComplete(int stCode, JSONObject response, String errMsg) {
+                        Log.d(TAG, "数据请求成功");
 
-                try {
-                    JSONArray pics = response.getJSONArray("pic");
+                        try {
+                            JSONArray pics = response.getJSONArray("pic");
 
-                    for (int i = 0; i < pics.length(); i++) {
+                            for (int i = 0; i < pics.length(); i++) {
 
-                        GalleryItem item = new GalleryItem();
+                                GalleryItem item = new GalleryItem();
 
-                        item.setUrl(pics.getJSONObject(i).optString("linkurl"));
-                        mItems.add(item);
+                                item.setUrl(handlerImageUrl(pics.getJSONObject(i).optString("linkurl")));
+                                mItems.add(item);
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        mAdapter.notifyDataSetChanged();
                     }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mAdapter.notifyDataSetChanged();
-            }
-        });
+                });
 
         //3、添加参数
         Map<String, String> params = jsonRequest.getParams();
@@ -168,5 +170,15 @@ public class MainFragment extends Fragment{
 
         if (queue != null)
             queue.stop();
+    }
+
+
+    /**
+     * 图片url处理，贴图库如何直接获得缩略图，需要将url处理后得到
+     */
+    public String handlerImageUrl(String url) {
+
+        int t = url.lastIndexOf(".");
+        return url.substring(0,t) + "t" + url.substring(t,url.length());
     }
 }
